@@ -7,7 +7,6 @@ import axios from 'axios';
 
 export default function FormPropsTextFields() {
   const url = process.env.API_URL;
-  console.log(url);
   const [nama, setNama] = useState("");
   const [alamat, setAlamat] = useState("");
   const [nohp, setNohp] = useState("");
@@ -48,7 +47,7 @@ export default function FormPropsTextFields() {
     <Box
       component="form"
       sx={{
-        '& .MuiTextField-root': { m: 1, width: '25ch' },
+        '& .MuiTextField-root': { m: 1, width: '25ch'},
       }}
       noValidate
       autoComplete="off"

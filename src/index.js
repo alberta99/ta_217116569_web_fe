@@ -5,7 +5,8 @@ import './index.css';
 import Login from './Login';
 import Admin from './components/AdminComponents/Sidebar/sidebar';
 import RegisterSales from './components/AdminComponents/MasterSales/RegisterSales';
-import reportWebVitals from './reportWebVitals';
+import DaftarSales from './components/AdminComponents/MasterSales/DaftarSales';
+//import reportWebVitals from './reportWebVitals';
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/" element={<Login />} />
         <Route path="admin" element={<Admin />}>
           <Route path="registersales" element={<RegisterSales />} />
+          <Route path="daftarsales" element={<DaftarSales />} />
         </Route>
       </Routes>
     </BrowserRouter>
