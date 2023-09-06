@@ -82,10 +82,12 @@ export default function PersistentDrawerLeft() {
   };
 
   const handleNavigation = useCallback((title) => {
-    if(title==="Daftar Lead") navigate("/daftarlead")
+    if(title==="Daftar Lead") navigate("/admin/daftarlead")
     else if(title==="Laporan") navigate("/admin/daftarlead")
     else if(title==="Daftar Salesperson") navigate("/admin/daftarsales")
     else if(title==="Register Salesperson") navigate("/admin/registersales")
+    else if(title==="Daftar Produk") navigate("/admin/daftarproduk")
+    else if(title==="Input Produk") navigate("/admin/inputproduk")
   },[navigate]);
 
   return (
@@ -127,7 +129,7 @@ export default function PersistentDrawerLeft() {
         </DrawerHeader>
         <Divider />
         <List>
-          {['Daftar Lead', 'Laporan', 'Daftar Salesperson', 'Register Salesperson'].map((text, index) => (
+          {['Daftar Lead', 'Laporan', 'Daftar Salesperson', 'Register Salesperson', 'Daftar Produk', 'Input Produk'].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton onClick={() => handleNavigation(text)}>
                 <ListItemText primary={text} />
