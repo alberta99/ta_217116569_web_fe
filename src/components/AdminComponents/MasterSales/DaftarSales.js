@@ -9,11 +9,11 @@ import Paper from '@mui/material/Paper';
 import axios from 'axios';
 
 export default function GetDataSales() {
-    const url = process.env.API_URL;
+    const url = process.env.REACT_APP_API_URL;
     const [dataSales, setData] = useState([]);
 
     useEffect(() => {
-    axios.get(`http://localhost:3000/salesperson`)
+    axios.get(`${url}/salesperson`)
     .then((response) => {
             setData(response.data.data);
         })

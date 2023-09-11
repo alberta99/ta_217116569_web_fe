@@ -11,6 +11,9 @@ function InsertProduk() {
   const [gambar1, setGambar1] = useState(null);
   const [gambar2, setGambar2] = useState(null);
   const [gambar3, setGambar3] = useState(null);
+  const [gambar1be, setGambar1be] = useState(null);
+  const [gambar2be, setGambar2be] = useState(null);
+  const [gambar3be, setGambar3be] = useState(null);
 
   const handleChangeinput = useCallback((event) => {
     if(event.target.name==="namaproduk") setNamaproduk(event.target.value)
@@ -21,17 +24,20 @@ function InsertProduk() {
 
   const handleGambar1Change = (event) => {
     const file = event.target.files[0];
-    setGambar1(file);
+    setGambar1(URL.createObjectURL(file));
+    setGambar1be(file);
   };
 
   const handleGambar2Change = (event) => {
     const file = event.target.files[0];
-    setGambar2(file);
+    setGambar2(URL.createObjectURL(file));
+    setGambar2be(file);
   };
 
   const handleGambar3Change = (event) => {
     const file = event.target.files[0];
-    setGambar3(file);
+    setGambar3(URL.createObjectURL(file));
+    setGambar3be(file);
   };
 
   const handleUpload = (event) => {
@@ -41,13 +47,17 @@ function InsertProduk() {
 
     const handleSubmit = useCallback(async() => {
       const formdata = new FormData();
-      formdata.append('gambar1_barang', gambar1, gambar1.name);
       formdata.append('nama_barang', namaproduk);
       formdata.append('jenis_barang', jenisproduk);
       formdata.append('detail_barang', detailproduk);
       formdata.append('harga_barang', hargaproduk);
+      formdata.append('gambar_1', gambar1be, gambar1be.name);
+      formdata.append('gambar_2', gambar2be, gambar2be.name);
+      formdata.append('gambar_3', gambar3be, gambar3be.name);
 
-      const {status,data} = await axios.post(`http://localhost:3000/barang`, formdata);
+      const {status,data} = await axios.post(`http://localhost:3000/barang`, formdata, {headers: {
+        'content-type': 'multipart/form-data'
+    }});
       // const {status,data} = await axios({
       //   method: 'post',
       //   url: `http://localhost:3000/barang`,
@@ -70,9 +80,12 @@ function InsertProduk() {
           setGambar1("")
           setGambar2("")
           setGambar3("")
+          setGambar1be("")
+          setGambar2be("")
+          setGambar3be("")
       }
 
-  },[namaproduk,jenisproduk,detailproduk,hargaproduk,gambar1,gambar2,gambar3]);
+  },[namaproduk,jenisproduk,detailproduk,hargaproduk,gambar1be,gambar2be,gambar3be]);
   
 
   return (
