@@ -1,9 +1,12 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import { Button, TextField, Paper, Typography } from '@mui/material';
 import axios from 'axios';
 
 function InsertProduk() {
+  const url = process.env.REACT_APP_API_URL;
+  const {product_id} = useParams();
   const [namaproduk, setNamaproduk] = useState("");
   const [jenisproduk, setJenisproduk] = useState("");
   const [detailproduk, setDetailproduk] = useState("");
@@ -45,19 +48,39 @@ function InsertProduk() {
     
   };
 
+  const getDataByID = useCallback(async(productId)=>{
+    const {data} = await axios.get(`${url}/barang/${productId}`)
+    setNamaproduk(data.data.nama_barang);
+    setDetailproduk(data.data.detail_barang);
+    setHargaproduk(data.data.harga_barang);
+    setJenisproduk(data.data.jenis_barang);
+    setGambar1(data.data.gambar1_barang);
+    setGambar2(data.data.gambar2_barang);
+    setGambar3(data.data.gambar3_barang);
+  },[])
+    useEffect(()=>{
+        if(product_id) getDataByID(product_id);
+    },[product_id])
+
     const handleSubmit = useCallback(async() => {
+      
       const formdata = new FormData();
       formdata.append('nama_barang', namaproduk);
       formdata.append('jenis_barang', jenisproduk);
       formdata.append('detail_barang', detailproduk);
       formdata.append('harga_barang', hargaproduk);
-      formdata.append('gambar_1', gambar1be, gambar1be.name);
-      formdata.append('gambar_2', gambar2be, gambar2be.name);
-      formdata.append('gambar_3', gambar3be, gambar3be.name);
+      gambar1be!==null && formdata.append('gambar_1', gambar1be, gambar1be.name);
+      gambar2be!==null && formdata.append('gambar_2', gambar2be, gambar2be.name);
+      gambar3be!==null && formdata.append('gambar_3', gambar3be, gambar3be.name);
+      console.log(namaproduk);
+      const {status,data} = product_id?await axios.put(`${url}/barang/${product_id}`, formdata, {headers: {
+        'content-type': 'multipart/form-data',
+        'Accept':"application/json"
+      }}):
+        await axios.post(`${url}/barang`, formdata, {headers: {
+          'content-type': 'multipart/form-data'
+      }});
 
-      const {status,data} = await axios.post(`http://localhost:3000/barang`, formdata, {headers: {
-        'content-type': 'multipart/form-data'
-    }});
       // const {status,data} = await axios({
       //   method: 'post',
       //   url: `http://localhost:3000/barang`,
@@ -73,6 +96,7 @@ function InsertProduk() {
       // });
       if(status === 200){
         alert(data.message)
+        if(!product_id){
           setNamaproduk("")
           setJenisproduk("")
           setHargaproduk("")
@@ -80,12 +104,13 @@ function InsertProduk() {
           setGambar1("")
           setGambar2("")
           setGambar3("")
-          setGambar1be("")
-          setGambar2be("")
-          setGambar3be("")
+          setGambar1be(null)
+          setGambar2be(null)
+          setGambar3be(null)
+        }
       }
 
-  },[namaproduk,jenisproduk,detailproduk,hargaproduk,gambar1be,gambar2be,gambar3be]);
+  },[namaproduk,jenisproduk,detailproduk,hargaproduk,gambar1be,gambar2be,gambar3be,product_id]);
   
 
   return (

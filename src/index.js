@@ -6,7 +6,7 @@ import Login from './Login';
 import Admin from './components/AdminComponents/Sidebar/sidebar';
 import RegisterSales from './components/AdminComponents/MasterSales/RegisterSales';
 import DaftarSales from './components/AdminComponents/MasterSales/DaftarSales';
-import InputProduk from './components/AdminComponents/MasterProduk/InsertProduk';
+import InputProduk from './components/AdminComponents/MasterProduk/InsertUpdateProduk';
 import DaftarProduk from './components/AdminComponents/MasterProduk/DaftarProduk';
 //import reportWebVitals from './reportWebVitals';
 
@@ -20,6 +20,7 @@ export default function App() {
           <Route path="daftarsales" element={<DaftarSales />} />
           <Route path="daftarproduk" element={<DaftarProduk />} />
           <Route path="inputproduk" element={<InputProduk />} />
+          <Route path="updateproduk/:product_id" element={<InputProduk />} />
         </Route>
       </Routes>
     </BrowserRouter>

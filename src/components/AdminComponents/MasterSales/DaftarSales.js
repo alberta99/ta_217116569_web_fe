@@ -21,7 +21,6 @@ export default function GetDataSales() {
         console.error('Error fetching data:', error);
         });
     }, []);
-    console.log(dataSales);
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
