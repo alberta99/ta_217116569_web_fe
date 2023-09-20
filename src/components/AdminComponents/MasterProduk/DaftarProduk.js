@@ -16,14 +16,15 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
+//import Checkbox from '@mui/material/Checkbox';
+//import IconButton from '@mui/material/IconButton';
+//import Tooltip from '@mui/material/Tooltip';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import DeleteIcon from '@mui/icons-material/Delete';
-import FilterListIcon from '@mui/icons-material/FilterList';
+//import DeleteIcon from '@mui/icons-material/Delete';
+//import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
+import { Refresh } from '@mui/icons-material';
 
 function createData(name, calories, fat, carbs, protein) {
   return {
@@ -275,6 +276,17 @@ export default function EnhancedTable() {
   const onEditClick = useCallback((productId)=>{
     navigate('/admin/updateproduk/'+productId)
   },[])
+
+  const onDeleteClick = useCallback((productId)=>{
+    axios.put(`${url}/barang/del/${productId}`)
+      .then((response) => {
+          console.log(response);
+      })
+      .catch((error) => {
+      console.error('Error deleting data:', error);
+      });
+      window.location.reload(false);
+  })
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
@@ -318,7 +330,7 @@ export default function EnhancedTable() {
                     </TableCell>
                     <TableCell>{row.harga_barang}</TableCell>
                     <TableCell><Button variant="contained" onClick={()=>onEditClick(row.id_barang)}>Edit</Button></TableCell>
-                    <TableCell><Button variant="contained">Delete</Button></TableCell>
+                    <TableCell><Button variant="contained" onClick={()=>onDeleteClick(row.id_barang)}>Delete</Button></TableCell>
                   </TableRow>
                 );
               })}

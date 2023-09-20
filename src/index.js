@@ -8,6 +8,9 @@ import RegisterSales from './components/AdminComponents/MasterSales/RegisterSale
 import DaftarSales from './components/AdminComponents/MasterSales/DaftarSales';
 import InputProduk from './components/AdminComponents/MasterProduk/InsertUpdateProduk';
 import DaftarProduk from './components/AdminComponents/MasterProduk/DaftarProduk';
+import DaftarLead from './components/AdminComponents/MasterLead/DaftarLead';
+import EditLead from './components/AdminComponents/MasterLead/EditLead';
+
 //import reportWebVitals from './reportWebVitals';
 
 export default function App() {
@@ -21,6 +24,8 @@ export default function App() {
           <Route path="daftarproduk" element={<DaftarProduk />} />
           <Route path="inputproduk" element={<InputProduk />} />
           <Route path="updateproduk/:product_id" element={<InputProduk />} />
+          <Route path="editlead/:lead_id" element={<EditLead />} />
+          <Route path="daftarlead" element={<DaftarLead />} />
         </Route>
       </Routes>
     </BrowserRouter>
