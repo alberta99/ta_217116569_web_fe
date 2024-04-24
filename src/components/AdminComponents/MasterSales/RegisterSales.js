@@ -1,53 +1,105 @@
-import React, {useState, useEffect, useCallback} from 'react';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import axios from 'axios';
+import React, { useState, useEffect, useCallback } from "react";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import Stack from "@mui/material/Stack";
+import Button from "@mui/material/Button";
+import axios from "axios";
 
 export default function FormPropsTextFields() {
-  const url = process.env.API_URL;
+  const url = process.env.REACT_APP_API_URL;
   const [nama, setNama] = useState("");
   const [alamat, setAlamat] = useState("");
   const [nohp, setNohp] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [namaError, setNamaError] = useState(false);
+  const [nohpError, setnohpError] = useState(false);
+  const [alamatError, setalamatError] = useState(false);
+  const [emailError, setEmailError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
 
-  const handleChangeinput = useCallback((event) => {
-    if(event.target.name==="nama") setNama(event.target.value)
-    else if(event.target.name==="alamat") setAlamat(event.target.value)
-    else if(event.target.name==="nohp") setNohp(event.target.value)
-    else if(event.target.name==="email") setEmail(event.target.value)
-    else if(event.target.name==="password") setPassword(event.target.value)
-  },[]);
+  // const handleChangeinput = useCallback((event) => {
+  //   if (event.target.name === "nama") setNama(event.target.value);
+  //   else if (event.target.name === "alamat") setAlamat(event.target.value);
+  //   else if (event.target.name === "nohp") setNohp(event.target.value);
+  //   else if (event.target.name === "email") setEmail(event.target.value);
+  //   else if (event.target.name === "password") setPassword(event.target.value);
+  // }, []);
+  const handleNamaChange = (e) => {
+    setNama(e.target.value);
+    if (e.target.value.length < 3) {
+      setNamaError("Nama minimal harus mengandung 3 karakter");
+    } else if (e.target.value.length > 20) {
+      setNamaError("Panjang nama maksimal 20 karakter");
+    } else if (!/^[a-zA-Z ]+$/.test(e.target.value)) {
+      setNamaError("Nama hanya dapat mengandung huruf dan spasi");
+    } else {
+      setNamaError(false);
+    }
+  };
 
-  const handleSubmit = useCallback(async() => {
-      const {status,data} = await axios({
-        method: 'post',
-        url: `http://localhost:3000/salesperson`,
+  const handleNohpChange = (e) => {
+    setNohp(e.target.value);
+    if (!/^(?:\+62)[2-9]\d{7,11}$/.test(e.target.value)) {
+      setnohpError("Format nomor hp tidak valid");
+    } else {
+      setnohpError(false);
+    }
+  };
+
+  const handleAlamatChange = (e) => {
+    setAlamat(e.target.value);
+    if (e.target.value.length < 7) {
+      setalamatError("Alamat minimal harus mengandung 7 karakter");
+    } else if (e.target.value.length > 20) {
+      setalamatError("Panjang alamat maksimal 50 karakter");
+    } else {
+      setalamatError(false);
+    }
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    if (e.target.validity.valid) {
+      setEmailError(false);
+    } else {
+      setEmailError(true);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (e.target.checkValidity()) {
+      const { status, data } = await axios({
+        method: "post",
+        url: `${url}/salesperson`,
         data: {
           nama_sales: nama,
           alamat_sales: alamat,
-          nohp_sales:nohp,
-          email_sales:email,
-          password_sales:password
-        }
+          nohp_sales: nohp,
+          email_sales: email,
+          password_sales: "default",
+        },
       });
-      if(status === 200){
-        alert(data.message)
-          setNama("")
-          setAlamat("")
-          setNohp("")
-          setEmail("")
-          setPassword("")
+      if (status === 200) {
+        alert("Register berhasil");
+        alert(data.message);
+        setNama("");
+        setAlamat("");
+        setNohp("");
+        setEmail("");
       }
-  
-  },[nama,alamat,nohp,email,password]);
+    } else {
+      alert("Harap isi semua data dengan valid...");
+    }
+  };
+
   return (
     <Box
       component="form"
+      onSubmit={handleSubmit}
       sx={{
-        '& .MuiTextField-root': { m: 1, width: '25ch'},
+        "& .MuiTextField-root": { m: 1, width: "25ch" },
       }}
       noValidate
       autoComplete="off"
@@ -59,9 +111,9 @@ export default function FormPropsTextFields() {
           name="nama"
           label="Nama"
           value={nama}
-          onChange={
-            handleChangeinput
-          }
+          onChange={handleNamaChange}
+          error={namaError}
+          helperText={namaError}
         />
       </div>
       <div>
@@ -71,9 +123,9 @@ export default function FormPropsTextFields() {
           name="alamat"
           label="Alamat"
           value={alamat}
-          onChange={
-            handleChangeinput
-          }
+          onChange={handleAlamatChange}
+          error={alamatError}
+          helperText={alamatError}
         />
       </div>
       <div>
@@ -83,9 +135,9 @@ export default function FormPropsTextFields() {
           label="Nomor HP"
           name="nohp"
           value={nohp}
-          onChange={
-            handleChangeinput
-          }
+          onChange={handleNohpChange}
+          error={nohpError}
+          helperText={nohpError}
         />
       </div>
       <div>
@@ -94,10 +146,12 @@ export default function FormPropsTextFields() {
           id="outlined-required"
           label="Email"
           name="email"
-          value={email}
-          onChange={
-            handleChangeinput
-          }
+          onChange={handleEmailChange}
+          error={emailError}
+          helperText={emailError ? "Harap masukkan email yang valid!" : ""}
+          inputProps={{
+            type: "email",
+          }}
         />
       </div>
       <div>
@@ -106,16 +160,18 @@ export default function FormPropsTextFields() {
           id="outlined-required"
           label="Password"
           name="password"
-          value={password}
-          onChange={
-            handleChangeinput
+          onChange={handlePasswordChange}
+          error={passwordError}
+          helperText={
+            passwordError ? "Harap masukkan password yang valid!" : ""
           }
+          inputProps={{
+            type: "password",
+          }}
         />
       </div>
-      <Button onClick={
-          handleSubmit
-        }
-      variant="contained">Register
+      <Button variant="contained" color="primary" type="submit">
+        Register
       </Button>
     </Box>
   );

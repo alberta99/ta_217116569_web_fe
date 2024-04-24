@@ -16,9 +16,15 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
+//import Checkbox from '@mui/material/Checkbox';
+//import IconButton from '@mui/material/IconButton';
+//import Tooltip from '@mui/material/Tooltip';
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
+//import DeleteIcon from '@mui/icons-material/Delete';
+//import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from "@mui/utils";
-import locale from "date-fns/locale/id";
-import moment from "moment";
+import { Refresh } from "@mui/icons-material";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -54,46 +60,22 @@ function stableSort(array, comparator) {
 
 const headCells = [
   {
-    id: "nama_lead",
+    id: "id_order",
     numeric: false,
     disablePadding: true,
-    label: "Nama Lead",
+    label: "ID Order",
   },
   {
-    id: "alamat_lead",
+    id: "tanggal_order",
     numeric: false,
     disablePadding: false,
-    label: "Alamat Lead",
+    label: "Tanggal Order",
   },
   {
-    id: "nohp_lead",
-    numeric: false,
+    id: "total_order",
+    numeric: true,
     disablePadding: false,
-    label: "Nomor HP",
-  },
-  {
-    id: "email_lead",
-    numeric: false,
-    disablePadding: false,
-    label: "Email Lead",
-  },
-  {
-    id: "tgl_join_lead",
-    numeric: false,
-    disablePadding: false,
-    label: "Tanggal Join",
-  },
-  {
-    id: "btn1",
-    numeric: false,
-    disablePadding: false,
-    label: "",
-  },
-  {
-    id: "btn2",
-    numeric: false,
-    disablePadding: false,
-    label: "",
+    label: "Total Order",
   },
 ];
 
@@ -164,14 +146,25 @@ function EnhancedTableToolbar(props) {
         }),
       }}
     >
-      <Typography
-        sx={{ flex: "1 1 100%" }}
-        variant="h6"
-        id="tableTitle"
-        component="div"
-      >
-        Master Lead
-      </Typography>
+      {numSelected > 0 ? (
+        <Typography
+          sx={{ flex: "1 1 100%" }}
+          color="inherit"
+          variant="subtitle1"
+          component="div"
+        >
+          {numSelected} selected
+        </Typography>
+      ) : (
+        <Typography
+          sx={{ flex: "1 1 100%" }}
+          variant="h6"
+          id="tableTitle"
+          component="div"
+        >
+          Daftar Order
+        </Typography>
+      )}
     </Toolbar>
   );
 }
@@ -187,37 +180,20 @@ export default function EnhancedTable() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const url = process.env.REACT_APP_API_URL;
-  const [dataLead, setData] = useState([]);
-  var idLocale = require("moment/locale/id");
-  moment.locale("id,", idLocale);
+  const [orderData, setOrderData] = useState([]);
   const navigate = useNavigate();
-  //get all data lead
+  const id_lead = "1c6988ad-e65c-4be3-b2ba-d4bb6d7ec867";
+
   useEffect(() => {
     axios
-      .get(`${url}/lead`)
+      .get(`${url}/order/orderbyidlead/${id_lead}`)
       .then((response) => {
-        setData(response.data.data);
+        setOrderData(response.data.data);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
   }, []);
-  //edit click
-  const onEditClick = useCallback((leadId) => {
-    navigate("/admin/editlead/" + leadId);
-  }, []);
-  //delete click
-  const onDeleteClick = useCallback((leadId) => {
-    axios
-      .put(`${url}/lead/del/${leadId}`)
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => {
-        console.error("Error deleting data:", error);
-      });
-    window.location.reload(false);
-  });
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -227,11 +203,29 @@ export default function EnhancedTable() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = dataLead.map((n) => n.name);
+      const newSelected = orderData.map((n) => n.name);
       setSelected(newSelected);
       return;
     }
     setSelected([]);
+  };
+
+  const handleClick = (event, name) => {
+    // const selectedIndex = selected.indexOf(name);
+    // let newSelected = [];
+    // if (selectedIndex === -1) {
+    //   newSelected = newSelected.concat(selected, name);
+    // } else if (selectedIndex === 0) {
+    //   newSelected = newSelected.concat(selected.slice(1));
+    // } else if (selectedIndex === selected.length - 1) {
+    //   newSelected = newSelected.concat(selected.slice(0, -1));
+    // } else if (selectedIndex > 0) {
+    //   newSelected = newSelected.concat(
+    //     selected.slice(0, selectedIndex),
+    //     selected.slice(selectedIndex + 1),
+    //   );
+    // }
+    // setSelected(newSelected);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -245,25 +239,22 @@ export default function EnhancedTable() {
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - dataLead.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - orderData.length) : 0;
 
   const visibleRows = React.useMemo(
     () =>
-      stableSort(dataLead, getComparator(order, orderBy)).slice(
+      stableSort(orderData, getComparator(order, orderBy)).slice(
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage
       ),
-    [dataLead, order, orderBy, page, rowsPerPage]
+    [orderData, order, orderBy, page, rowsPerPage]
   );
+  const onEditClick = useCallback((productId) => {
+    navigate("/admin/updateproduk/" + productId);
+  }, []);
 
   return (
     <Box sx={{ width: "100%" }}>
-      <button
-        style={{ margin: 10 }}
-        onClick={() => navigate("/admin/inputproduk")}
-      >
-        Tambah Produk
-      </button>
       <Paper sx={{ width: "100%", mb: 2 }}>
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
@@ -274,35 +265,15 @@ export default function EnhancedTable() {
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={dataLead.length}
+              rowCount={orderData.length}
             />
             <TableBody>
               {visibleRows.map((row, index) => {
                 return (
                   <TableRow>
-                    <TableCell>{row.nama_lead}</TableCell>
-                    <TableCell>{row.alamat_lead}</TableCell>
-                    <TableCell>{row.nohp_lead}</TableCell>
-                    <TableCell>{row.email_lead}</TableCell>
-                    <TableCell>
-                      {moment(row.tgl_join_lead).locale("id").format("LL")}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="contained"
-                        onClick={() => onEditClick(row.id_lead)}
-                      >
-                        Edit
-                      </Button>
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="contained"
-                        onClick={() => onDeleteClick(row.id_lead)}
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
+                    <TableCell>{row.id_order}</TableCell>
+                    <TableCell>{row.tanggal_order}</TableCell>
+                    <TableCell>Rp{row.total_order}</TableCell>
                   </TableRow>
                 );
               })}
@@ -321,7 +292,7 @@ export default function EnhancedTable() {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={dataLead.length}
+          count={orderData.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}

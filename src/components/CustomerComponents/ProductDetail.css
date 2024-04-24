@@ -1,0 +1,33 @@
+.product-detail-container {
+    display: flex;
+    justify-content: space-between;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .product-images {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  
+  .product-images img {
+    max-width: 30%;
+    margin-bottom: 10px;
+  }
+  
+  .product-info {
+    flex: 1;
+    padding-left: 20px;
+  }
+  
+  .product-info h2 {
+    margin-top: 0;
+  }
+  
+  .product-info p {
+    margin: 10px 0;
+  }
+  

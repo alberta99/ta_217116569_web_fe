@@ -1,12 +1,12 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import Box from '@mui/material/Box';
-import { Button, TextField, Paper, Typography } from '@mui/material';
-import axios from 'axios';
+import React, { useState, useCallback, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import Box from "@mui/material/Box";
+import { Button, TextField, Paper, Typography } from "@mui/material";
+import axios from "axios";
 
 function InsertProduk() {
   const url = process.env.REACT_APP_API_URL;
-  const {product_id} = useParams();
+  const { product_id } = useParams();
   const [namaproduk, setNamaproduk] = useState("");
   const [jenisproduk, setJenisproduk] = useState("");
   const [detailproduk, setDetailproduk] = useState("");
@@ -19,11 +19,14 @@ function InsertProduk() {
   const [gambar3be, setGambar3be] = useState(null);
 
   const handleChangeinput = useCallback((event) => {
-    if(event.target.name==="namaproduk") setNamaproduk(event.target.value)
-    else if(event.target.name==="jenisproduk") setJenisproduk(event.target.value)
-    else if(event.target.name==="detailproduk") setDetailproduk(event.target.value)
-    else if(event.target.name==="hargaproduk") setHargaproduk(event.target.value)
-  },[]);
+    if (event.target.name === "namaproduk") setNamaproduk(event.target.value);
+    else if (event.target.name === "jenisproduk")
+      setJenisproduk(event.target.value);
+    else if (event.target.name === "detailproduk")
+      setDetailproduk(event.target.value);
+    else if (event.target.name === "hargaproduk")
+      setHargaproduk(event.target.value);
+  }, []);
 
   const handleGambar1Change = (event) => {
     const file = event.target.files[0];
@@ -45,11 +48,10 @@ function InsertProduk() {
 
   const handleUpload = (event) => {
     event.preventDefault();
-    
   };
 
-  const getDataByID = useCallback(async(productId)=>{
-    const {data} = await axios.get(`${url}/barang/${productId}`)
+  const getDataByID = useCallback(async (productId) => {
+    const { data } = await axios.get(`${url}/barang/${productId}`);
     setNamaproduk(data.data.nama_barang);
     setDetailproduk(data.data.detail_barang);
     setHargaproduk(data.data.harga_barang);
@@ -57,67 +59,94 @@ function InsertProduk() {
     setGambar1(data.data.gambar1_barang);
     setGambar2(data.data.gambar2_barang);
     setGambar3(data.data.gambar3_barang);
-  },[])
-    useEffect(()=>{
-        if(product_id) getDataByID(product_id);
-    },[product_id])
+  }, []);
+  useEffect(() => {
+    if (product_id) {
+      getDataByID(product_id);
+    }
+  }, [product_id]);
 
-    const handleSubmit = useCallback(async() => {
-      
-      const formdata = new FormData();
-      formdata.append('nama_barang', namaproduk);
-      formdata.append('jenis_barang', jenisproduk);
-      formdata.append('detail_barang', detailproduk);
-      formdata.append('harga_barang', hargaproduk);
-      gambar1be!==null && formdata.append('gambar_1', gambar1be, gambar1be.name);
-      gambar2be!==null && formdata.append('gambar_2', gambar2be, gambar2be.name);
-      gambar3be!==null && formdata.append('gambar_3', gambar3be, gambar3be.name);
-      console.log(namaproduk);
-      const {status,data} = product_id?await axios.put(`${url}/barang/${product_id}`, formdata, {headers: {
-        'content-type': 'multipart/form-data',
-        'Accept':"application/json"
-      }}):
-        await axios.post(`${url}/barang`, formdata, {headers: {
-          'content-type': 'multipart/form-data'
-      }});
+  const insertData = async (formdata) => {
+    try {
+      await axios.post(`${url}/barang`, formdata, {
+        headers: {
+          "content-type": "multipart/form-data",
+        },
+      });
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
-      // const {status,data} = await axios({
-      //   method: 'post',
-      //   url: `http://localhost:3000/barang`,
-      //   data: {
-      //     nama_barang: namaproduk,
-      //     jenis_barang: jenisproduk,
-      //     detail_barang:detailproduk,
-      //     harga_barang:hargaproduk,
-      //     gambar1_barang:gambar1,
-      //     gambar2_barang:gambar2,
-      //     gambar3_barang:gambar3
-      //   }
-      // });
-      if(status === 200){
-        alert(data.message)
-        if(!product_id){
-          setNamaproduk("")
-          setJenisproduk("")
-          setHargaproduk("")
-          setDetailproduk("")
-          setGambar1("")
-          setGambar2("")
-          setGambar3("")
-          setGambar1be(null)
-          setGambar2be(null)
-          setGambar3be(null)
-        }
+  const handleSubmit = useCallback(async () => {
+    const formdata = new FormData();
+    formdata.append("nama_barang", namaproduk);
+    formdata.append("jenis_barang", jenisproduk);
+    formdata.append("detail_barang", detailproduk);
+    formdata.append("harga_barang", hargaproduk);
+    gambar1be !== null &&
+      formdata.append("gambar_1", gambar1be, gambar1be.name);
+    gambar2be !== null &&
+      formdata.append("gambar_2", gambar2be, gambar2be.name);
+    gambar3be !== null &&
+      formdata.append("gambar_3", gambar3be, gambar3be.name);
+    const { status, data } = product_id
+      ? await axios.put(`${url}/barang/${product_id}`, formdata, {
+          headers: {
+            "content-type": "multipart/form-data",
+            Accept: "application/json",
+          },
+        })
+      : await axios.post(`${url}/barang`, formdata, {
+          headers: {
+            "content-type": "multipart/form-data",
+          },
+        });
+
+    // const {status,data} = await axios({
+    //   method: 'post',
+    //   url: `http://localhost:3000/barang`,
+    //   data: {
+    //     nama_barang: namaproduk,
+    //     jenis_barang: jenisproduk,
+    //     detail_barang:detailproduk,
+    //     harga_barang:hargaproduk,
+    //     gambar1_barang:gambar1,
+    //     gambar2_barang:gambar2,
+    //     gambar3_barang:gambar3
+    //   }
+    // });
+    if (status === 200) {
+      alert(data.message);
+      if (!product_id) {
+        setNamaproduk("");
+        setJenisproduk("");
+        setHargaproduk("");
+        setDetailproduk("");
+        setGambar1("");
+        setGambar2("");
+        setGambar3("");
+        setGambar1be(null);
+        setGambar2be(null);
+        setGambar3be(null);
       }
-
-  },[namaproduk,jenisproduk,detailproduk,hargaproduk,gambar1be,gambar2be,gambar3be,product_id]);
-  
+    }
+  }, [
+    namaproduk,
+    jenisproduk,
+    detailproduk,
+    hargaproduk,
+    gambar1be,
+    gambar2be,
+    gambar3be,
+    product_id,
+  ]);
 
   return (
     <div>
       <Typography variant="h4">Tambah Produk</Typography>
       <Box>
-          <TextField
+        <TextField
           label="Gambar 1"
           name="gambar_1"
           type="file"
@@ -125,8 +154,13 @@ function InsertProduk() {
           accept="image/*"
         />
         {gambar1 && (
-          <Paper elevation={3} style={{ width: 100, height: 100, margin: '16px' }}>
-            <img src={gambar1} alt="Preview Gambar 1" style={{ width: '100%', height: '100%' }} />
+          <Paper
+            elevation={3}
+            style={{ width: 100, height: 100, margin: "16px" }}
+          >
+            <div>
+              <img src={gambar1} style={{ width: "100%", height: "100%" }} />
+            </div>
           </Paper>
         )}
 
@@ -138,8 +172,11 @@ function InsertProduk() {
           accept="image/*"
         />
         {gambar2 && (
-          <Paper elevation={3} style={{ width: 100, height: 100, margin: '16px' }}>
-            <img src={gambar2} alt="Preview Gambar 2" style={{ width: '100%', height: '100%' }} />
+          <Paper
+            elevation={3}
+            style={{ width: 100, height: 100, margin: "16px" }}
+          >
+            <img src={gambar2} style={{ width: "100%", height: "100%" }} />
           </Paper>
         )}
 
@@ -151,74 +188,66 @@ function InsertProduk() {
           accept="image/*"
         />
         {gambar3 && (
-          <Paper elevation={3} style={{ width: 100, height: 100, margin: '16px' }}>
-            <img src={gambar3} alt="Preview Gambar 3" style={{ width: '100%', height: '100%' }} />
+          <Paper
+            elevation={3}
+            style={{ width: 100, height: 100, margin: "16px" }}
+          >
+            <img src={gambar3} style={{ width: "100%", height: "100%" }} />
           </Paper>
         )}
         <Box
-            component="form"
-            sx={{
-              '& .MuiTextField-root': { m: 1, width: '25ch'},
-            }}
-            noValidate
-            autoComplete="off"
-          >
-            <div>
-              <TextField
-                required
-                id="outlined-required"
-                name="namaproduk"
-                label="Nama Produk"
-                value={namaproduk}
-                onChange={
-                   handleChangeinput
-                }
-              />
-            </div>
-            <div>
-              <TextField
-                required
-                id="outlined-required"
-                name="jenisproduk"
-                label="Jenis Produk"
-                value={jenisproduk}
-                onChange={
-                  handleChangeinput
-                }
-              />
-            </div>
-            <div>
-              <TextField
-                required
-                id="outlined-required"
-                label="Detail Produk"
-                name="detailproduk"
-                value={detailproduk}
-                onChange={
-                  handleChangeinput
-                }
-              />
-            </div>
-            <div>
-              <TextField
-                required
-                id="outlined-required"
-                label="Harga Produk"
-                name="hargaproduk"
-                value={hargaproduk}
-                onChange={
-                  handleChangeinput
-                }
-              />
-            </div>
-            <Button onClick={
-                handleSubmit
-            }
-            variant="contained">Simpan Produk
-            </Button>
-          </Box>
+          component="form"
+          sx={{
+            "& .MuiTextField-root": { m: 1, width: "25ch" },
+          }}
+          noValidate
+          autoComplete="off"
+        >
+          <div>
+            <TextField
+              required
+              id="outlined-required"
+              name="namaproduk"
+              label="Nama Produk"
+              value={namaproduk}
+              onChange={handleChangeinput}
+            />
+          </div>
+          <div>
+            <TextField
+              required
+              id="outlined-required"
+              name="jenisproduk"
+              label="Jenis Produk"
+              value={jenisproduk}
+              onChange={handleChangeinput}
+            />
+          </div>
+          <div>
+            <TextField
+              required
+              id="outlined-required"
+              label="Detail Produk"
+              name="detailproduk"
+              value={detailproduk}
+              onChange={handleChangeinput}
+            />
+          </div>
+          <div>
+            <TextField
+              required
+              id="outlined-required"
+              label="Harga Produk"
+              name="hargaproduk"
+              value={hargaproduk}
+              onChange={handleChangeinput}
+            />
+          </div>
+          <Button onClick={handleSubmit} variant="contained">
+            Simpan Produk
+          </Button>
+        </Box>
       </Box>
-      
     </div>
   );
 }

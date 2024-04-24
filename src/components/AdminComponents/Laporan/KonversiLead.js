@@ -1,8 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
-import Button from "@mui/material/Button";
 import { alpha } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
@@ -16,9 +14,25 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
+import Checkbox from "@mui/material/Checkbox";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
+import DeleteIcon from "@mui/icons-material/Delete";
+import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
-import locale from "date-fns/locale/id";
-import moment from "moment";
+
+function createData(id, name, calories, fat, carbs, protein) {
+  return {
+    id,
+    name,
+    calories,
+    fat,
+    carbs,
+    protein,
+  };
+}
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -54,58 +68,33 @@ function stableSort(array, comparator) {
 
 const headCells = [
   {
-    id: "nama_lead",
-    numeric: false,
-    disablePadding: true,
-    label: "Nama Lead",
+    id: "nama_sales",
+    numeric: true,
+    disablePadding: false,
+    label: "Nama sales",
   },
   {
-    id: "alamat_lead",
-    numeric: false,
+    id: "lead",
+    numeric: true,
     disablePadding: false,
-    label: "Alamat Lead",
+    label: "Jumlah lead",
   },
   {
-    id: "nohp_lead",
-    numeric: false,
+    id: "cust",
+    numeric: true,
     disablePadding: false,
-    label: "Nomor HP",
+    label: "Jumlah customer",
   },
   {
-    id: "email_lead",
-    numeric: false,
+    id: "conversion_rate",
+    numeric: true,
     disablePadding: false,
-    label: "Email Lead",
-  },
-  {
-    id: "tgl_join_lead",
-    numeric: false,
-    disablePadding: false,
-    label: "Tanggal Join",
-  },
-  {
-    id: "btn1",
-    numeric: false,
-    disablePadding: false,
-    label: "",
-  },
-  {
-    id: "btn2",
-    numeric: false,
-    disablePadding: false,
-    label: "",
+    label: "Tingkat konversi",
   },
 ];
 
 function EnhancedTableHead(props) {
-  const {
-    onSelectAllClick,
-    order,
-    orderBy,
-    numSelected,
-    rowCount,
-    onRequestSort,
-  } = props;
+  const { order, orderBy, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -116,6 +105,7 @@ function EnhancedTableHead(props) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
+            align={headCell.numeric ? "right" : "left"}
             padding={headCell.disablePadding ? "none" : "normal"}
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -164,14 +154,39 @@ function EnhancedTableToolbar(props) {
         }),
       }}
     >
-      <Typography
-        sx={{ flex: "1 1 100%" }}
-        variant="h6"
-        id="tableTitle"
-        component="div"
-      >
-        Master Lead
-      </Typography>
+      {numSelected > 0 ? (
+        <Typography
+          sx={{ flex: "1 1 100%" }}
+          color="inherit"
+          variant="subtitle1"
+          component="div"
+        >
+          {numSelected} selected
+        </Typography>
+      ) : (
+        <Typography
+          sx={{ flex: "1 1 100%" }}
+          variant="h6"
+          id="tableTitle"
+          component="div"
+        >
+          Laporan konversi lead
+        </Typography>
+      )}
+
+      {numSelected > 0 ? (
+        <Tooltip title="Delete">
+          <IconButton>
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
+      ) : (
+        <Tooltip title="Filter list">
+          <IconButton>
+            <FilterListIcon />
+          </IconButton>
+        </Tooltip>
+      )}
     </Toolbar>
   );
 }
@@ -181,43 +196,37 @@ EnhancedTableToolbar.propTypes = {
 };
 
 export default function EnhancedTable() {
+  const [data, setData] = useState([]);
+  const [data2, setData2] = useState([]);
+  const url = process.env.REACT_APP_API_URL;
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
+  const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const url = process.env.REACT_APP_API_URL;
-  const [dataLead, setData] = useState([]);
-  var idLocale = require("moment/locale/id");
-  moment.locale("id,", idLocale);
-  const navigate = useNavigate();
-  //get all data lead
-  useEffect(() => {
+
+  const allData = () => {
     axios
-      .get(`${url}/lead`)
+      .get(`${url}/laporan/conversionrate`)
       .then((response) => {
-        setData(response.data.data);
+        setData(response.data.data[0]);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, []);
-  //edit click
-  const onEditClick = useCallback((leadId) => {
-    navigate("/admin/editlead/" + leadId);
-  }, []);
-  //delete click
-  const onDeleteClick = useCallback((leadId) => {
     axios
-      .put(`${url}/lead/del/${leadId}`)
+      .get(`${url}/laporan/conversionratebysales`)
       .then((response) => {
-        console.log(response);
+        setData2(response.data.data);
       })
       .catch((error) => {
-        console.error("Error deleting data:", error);
+        console.error("Error fetching data:", error);
       });
-    window.location.reload(false);
-  });
+  };
+  useEffect(() => {
+    allData();
+  }, []);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -227,11 +236,30 @@ export default function EnhancedTable() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = dataLead.map((n) => n.name);
+      const newSelected = data2.map((n) => n.id);
       setSelected(newSelected);
       return;
     }
     setSelected([]);
+  };
+
+  const handleClick = (event, id) => {
+    const selectedIndex = selected.indexOf(id);
+    let newSelected = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1)
+      );
+    }
+    setSelected(newSelected);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -243,73 +271,69 @@ export default function EnhancedTable() {
     setPage(0);
   };
 
+  const handleChangeDense = (event) => {
+    setDense(event.target.checked);
+  };
+
+  const isSelected = (id) => selected.indexOf(id) !== -1;
+
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - dataLead.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data2.length) : 0;
 
   const visibleRows = React.useMemo(
     () =>
-      stableSort(dataLead, getComparator(order, orderBy)).slice(
+      stableSort(data2, getComparator(order, orderBy)).slice(
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage
       ),
-    [dataLead, order, orderBy, page, rowsPerPage]
+    [order, orderBy, page, rowsPerPage]
   );
 
   return (
     <Box sx={{ width: "100%" }}>
-      <button
-        style={{ margin: 10 }}
-        onClick={() => navigate("/admin/inputproduk")}
-      >
-        Tambah Produk
-      </button>
+      <div>
+        {" "}
+        Persentase Konversi Lead ke Customer :{" "}
+        {(
+          (parseInt(data.cust) / (parseInt(data.cust) + parseInt(data.lead))) *
+          100
+        ).toFixed(2)}
+        %
+      </div>
       <Paper sx={{ width: "100%", mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
-          <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
+          <Table
+            sx={{ minWidth: 750 }}
+            aria-labelledby="tableTitle"
+            size={dense ? "small" : "medium"}
+          >
             <EnhancedTableHead
               numSelected={selected.length}
               order={order}
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={dataLead.length}
+              rowCount={data2.length}
             />
             <TableBody>
               {visibleRows.map((row, index) => {
+                const isItemSelected = isSelected(row.id);
+                const labelId = `enhanced-table-checkbox-${index}`;
+
                 return (
                   <TableRow>
-                    <TableCell>{row.nama_lead}</TableCell>
-                    <TableCell>{row.alamat_lead}</TableCell>
-                    <TableCell>{row.nohp_lead}</TableCell>
-                    <TableCell>{row.email_lead}</TableCell>
-                    <TableCell>
-                      {moment(row.tgl_join_lead).locale("id").format("LL")}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="contained"
-                        onClick={() => onEditClick(row.id_lead)}
-                      >
-                        Edit
-                      </Button>
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="contained"
-                        onClick={() => onDeleteClick(row.id_lead)}
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
+                    <TableCell align="right">{row.nama_sales}</TableCell>
+                    <TableCell align="right">{row.lead}</TableCell>
+                    <TableCell align="right">{row.cust}</TableCell>
+                    <TableCell align="right">{row.conversion_rate}%</TableCell>
                   </TableRow>
                 );
               })}
               {emptyRows > 0 && (
                 <TableRow
                   style={{
-                    height: 33 * emptyRows,
+                    height: (dense ? 33 : 53) * emptyRows,
                   }}
                 >
                   <TableCell colSpan={6} />
@@ -321,13 +345,17 @@ export default function EnhancedTable() {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={dataLead.length}
+          count={data2.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
+      <FormControlLabel
+        control={<Switch checked={dense} onChange={handleChangeDense} />}
+        label="Dense padding"
+      />
     </Box>
   );
 }

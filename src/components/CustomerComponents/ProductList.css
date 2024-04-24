@@ -1,0 +1,33 @@
+.product-list-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .product-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  
+  .product-item {
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 5px;
+  }
+  
+  .product-item img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .product-item h3 {
+    margin-top: 0;
+    margin-bottom: 5px;
+  }
+  
+  .product-item p {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  

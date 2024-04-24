@@ -1,8 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
-import Button from "@mui/material/Button";
 import { alpha } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
@@ -16,9 +14,42 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
+import Checkbox from "@mui/material/Checkbox";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
+import DeleteIcon from "@mui/icons-material/Delete";
+import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
-import locale from "date-fns/locale/id";
 import moment from "moment";
+
+function createData(id, name, calories, fat, carbs, protein) {
+  return {
+    id,
+    name,
+    calories,
+    fat,
+    carbs,
+    protein,
+  };
+}
+
+const rows = [
+  createData(1, "Cupcake", 305, 3.7, 67, 4.3),
+  createData(2, "Donut", 452, 25.0, 51, 4.9),
+  createData(3, "Eclair", 262, 16.0, 24, 6.0),
+  createData(4, "Frozen yoghurt", 159, 6.0, 24, 4.0),
+  createData(5, "Gingerbread", 356, 16.0, 49, 3.9),
+  createData(6, "Honeycomb", 408, 3.2, 87, 6.5),
+  createData(7, "Ice cream sandwich", 237, 9.0, 37, 4.3),
+  createData(8, "Jelly Bean", 375, 0.0, 94, 0.0),
+  createData(9, "KitKat", 518, 26.0, 65, 7.0),
+  createData(10, "Lollipop", 392, 0.2, 98, 0.0),
+  createData(11, "Marshmallow", 318, 0, 81, 2.0),
+  createData(12, "Nougat", 360, 19.0, 9, 37.0),
+  createData(13, "Oreo", 437, 18.0, 63, 4.0),
+];
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -54,58 +85,45 @@ function stableSort(array, comparator) {
 
 const headCells = [
   {
-    id: "nama_lead",
+    id: "id_sales",
     numeric: false,
     disablePadding: true,
-    label: "Nama Lead",
+    label: "ID Sales",
   },
   {
-    id: "alamat_lead",
+    id: "nama_sales",
     numeric: false,
     disablePadding: false,
-    label: "Alamat Lead",
+    label: "Nama Sales",
   },
   {
-    id: "nohp_lead",
-    numeric: false,
+    id: "jadwal",
+    numeric: true,
     disablePadding: false,
-    label: "Nomor HP",
+    label: "Jumlah Jadwal",
   },
   {
-    id: "email_lead",
-    numeric: false,
+    id: "penjualan",
+    numeric: true,
     disablePadding: false,
-    label: "Email Lead",
+    label: "Jumlah Order",
   },
   {
-    id: "tgl_join_lead",
-    numeric: false,
+    id: "jumlah_lead",
+    numeric: true,
     disablePadding: false,
-    label: "Tanggal Join",
+    label: "Jumlah Lead/Customer",
   },
   {
-    id: "btn1",
+    id: "tgl_join_sales",
     numeric: false,
     disablePadding: false,
-    label: "",
-  },
-  {
-    id: "btn2",
-    numeric: false,
-    disablePadding: false,
-    label: "",
+    label: "Tanggal Bergabung",
   },
 ];
 
 function EnhancedTableHead(props) {
-  const {
-    onSelectAllClick,
-    order,
-    orderBy,
-    numSelected,
-    rowCount,
-    onRequestSort,
-  } = props;
+  const { order, orderBy, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -116,6 +134,7 @@ function EnhancedTableHead(props) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
+            align={headCell.numeric ? "right" : "left"}
             padding={headCell.disablePadding ? "none" : "normal"}
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -164,14 +183,39 @@ function EnhancedTableToolbar(props) {
         }),
       }}
     >
-      <Typography
-        sx={{ flex: "1 1 100%" }}
-        variant="h6"
-        id="tableTitle"
-        component="div"
-      >
-        Master Lead
-      </Typography>
+      {numSelected > 0 ? (
+        <Typography
+          sx={{ flex: "1 1 100%" }}
+          color="inherit"
+          variant="subtitle1"
+          component="div"
+        >
+          {numSelected} selected
+        </Typography>
+      ) : (
+        <Typography
+          sx={{ flex: "1 1 100%" }}
+          variant="h6"
+          id="tableTitle"
+          component="div"
+        >
+          Laporan Salesperson
+        </Typography>
+      )}
+
+      {numSelected > 0 ? (
+        <Tooltip title="Delete">
+          <IconButton>
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
+      ) : (
+        <Tooltip title="Filter list">
+          <IconButton>
+            <FilterListIcon />
+          </IconButton>
+        </Tooltip>
+      )}
     </Toolbar>
   );
 }
@@ -185,39 +229,24 @@ export default function EnhancedTable() {
   const [orderBy, setOrderBy] = React.useState("calories");
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
+  const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const url = process.env.REACT_APP_API_URL;
-  const [dataLead, setData] = useState([]);
-  var idLocale = require("moment/locale/id");
-  moment.locale("id,", idLocale);
-  const navigate = useNavigate();
-  //get all data lead
+  const [data, setData] = useState([]);
   useEffect(() => {
-    axios
-      .get(`${url}/lead`)
-      .then((response) => {
-        setData(response.data.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
+    try {
+      axios
+        .get(`${url}/laporan/allsales`)
+        .then((response) => {
+          setData(response.data.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
-  //edit click
-  const onEditClick = useCallback((leadId) => {
-    navigate("/admin/editlead/" + leadId);
-  }, []);
-  //delete click
-  const onDeleteClick = useCallback((leadId) => {
-    axios
-      .put(`${url}/lead/del/${leadId}`)
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => {
-        console.error("Error deleting data:", error);
-      });
-    window.location.reload(false);
-  });
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -227,7 +256,7 @@ export default function EnhancedTable() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = dataLead.map((n) => n.name);
+      const newSelected = data.map((n) => n.id);
       setSelected(newSelected);
       return;
     }
@@ -243,73 +272,60 @@ export default function EnhancedTable() {
     setPage(0);
   };
 
+  const handleChangeDense = (event) => {
+    setDense(event.target.checked);
+  };
+
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - dataLead.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
   const visibleRows = React.useMemo(
     () =>
-      stableSort(dataLead, getComparator(order, orderBy)).slice(
+      stableSort(data, getComparator(order, orderBy)).slice(
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage
       ),
-    [dataLead, order, orderBy, page, rowsPerPage]
+    [order, orderBy, page, rowsPerPage]
   );
-
+  var idLocale = require("moment/locale/id");
+  moment.locale("id,", idLocale);
   return (
     <Box sx={{ width: "100%" }}>
-      <button
-        style={{ margin: 10 }}
-        onClick={() => navigate("/admin/inputproduk")}
-      >
-        Tambah Produk
-      </button>
       <Paper sx={{ width: "100%", mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
-          <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
+          <Table
+            sx={{ minWidth: 750 }}
+            aria-labelledby="tableTitle"
+            size={dense ? "small" : "medium"}
+          >
             <EnhancedTableHead
               numSelected={selected.length}
               order={order}
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={dataLead.length}
+              rowCount={data.length}
             />
             <TableBody>
               {visibleRows.map((row, index) => {
                 return (
                   <TableRow>
-                    <TableCell>{row.nama_lead}</TableCell>
-                    <TableCell>{row.alamat_lead}</TableCell>
-                    <TableCell>{row.nohp_lead}</TableCell>
-                    <TableCell>{row.email_lead}</TableCell>
-                    <TableCell>
-                      {moment(row.tgl_join_lead).locale("id").format("LL")}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="contained"
-                        onClick={() => onEditClick(row.id_lead)}
-                      >
-                        Edit
-                      </Button>
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="contained"
-                        onClick={() => onDeleteClick(row.id_lead)}
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
+                    <TableCell align="right">{row.id_sales}</TableCell>
+                    <TableCell align="right">{row.nama_sales}</TableCell>
+                    <TableCell align="right">{row.jadwal}</TableCell>
+                    <TableCell align="right">{row.penjualan}</TableCell>
+                    <TableCell align="right">{row.jumlah_lead}</TableCell>
+                    <TableCell align="right">
+                      {moment(row.tgl_join_sales).locale("id").format("LL")}
+                    </TableCell>{" "}
                   </TableRow>
                 );
               })}
               {emptyRows > 0 && (
                 <TableRow
                   style={{
-                    height: 33 * emptyRows,
+                    height: (dense ? 33 : 53) * emptyRows,
                   }}
                 >
                   <TableCell colSpan={6} />
@@ -321,13 +337,17 @@ export default function EnhancedTable() {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={dataLead.length}
+          count={data.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
+      <FormControlLabel
+        control={<Switch checked={dense} onChange={handleChangeDense} />}
+        label="Dense padding"
+      />
     </Box>
   );
 }

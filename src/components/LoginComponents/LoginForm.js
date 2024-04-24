@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import InputField from './InputField';
+import React, { useState } from "react";
+import InputField from "./InputField";
 
 const LoginForm = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleLogin = () => {
     // Implement your authentication logic here
-    console.log('Username:', username);
-    console.log('Password:', password);
+    console.log("Username:", username);
+    console.log("Password:", password);
   };
 
   return (
@@ -16,7 +16,7 @@ const LoginForm = () => {
       <h2>Login</h2>
       <InputField
         type="text"
-        placeholder="Username"
+        placeholder="email"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
       />
