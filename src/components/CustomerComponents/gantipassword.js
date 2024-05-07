@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 function ChangePassword() {
+  const [passwordLama, setPasswordLama] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -20,6 +21,14 @@ function ChangePassword() {
   return (
     <div style={{ margin: 20 }}>
       <h2>Ganti Password</h2>
+      <div>
+        <label>Password Lama:</label>
+        <input
+          type="password"
+          value={passwordLama}
+          onChange={(e) => setPasswordLama(e.target.value)}
+        />
+      </div>
       <div>
         <label>Password Baru:</label>
         <input

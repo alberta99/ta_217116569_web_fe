@@ -25,6 +25,9 @@ import Switch from "@mui/material/Switch";
 //import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from "@mui/utils";
 import { Refresh } from "@mui/icons-material";
+import moment from "moment";
+var idLocale = require("moment/locale/id");
+moment.locale("id,", idLocale);
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -70,6 +73,12 @@ const headCells = [
     numeric: false,
     disablePadding: false,
     label: "Tanggal Order",
+  },
+  {
+    id: "qty_total",
+    numeric: true,
+    disablePadding: false,
+    label: "Jumlah Barang",
   },
   {
     id: "total_order",
@@ -158,7 +167,7 @@ function EnhancedTableToolbar(props) {
       ) : (
         <Typography
           sx={{ flex: "1 1 100%" }}
-          variant="h6"
+          variant="h3"
           id="tableTitle"
           component="div"
         >
@@ -257,47 +266,61 @@ export default function EnhancedTable() {
     <Box sx={{ width: "100%" }}>
       <Paper sx={{ width: "100%", mb: 2 }}>
         <EnhancedTableToolbar numSelected={selected.length} />
-        <TableContainer>
-          <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
-            <EnhancedTableHead
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={orderData.length}
-            />
-            <TableBody>
-              {visibleRows.map((row, index) => {
-                return (
-                  <TableRow>
-                    <TableCell>{row.id_order}</TableCell>
-                    <TableCell>{row.tanggal_order}</TableCell>
-                    <TableCell>Rp{row.total_order}</TableCell>
+        <div style={{ margin: "30px" }}>
+          <TableContainer>
+            <Table sx={{ minWidth: 340 }} aria-labelledby="tableTitle">
+              <EnhancedTableHead
+                numSelected={selected.length}
+                order={order}
+                orderBy={orderBy}
+                onSelectAllClick={handleSelectAllClick}
+                onRequestSort={handleRequestSort}
+                rowCount={orderData.length}
+              />
+              <TableBody>
+                {visibleRows.map((row, index) => {
+                  return (
+                    <TableRow>
+                      <TableCell>{row.id_order}</TableCell>
+                      <TableCell>
+                        {moment(row.tanggal_order).locale("id").format("LLLL")}
+                      </TableCell>
+                      <TableCell>{row.qty_total}</TableCell>
+                      <TableCell>Rp{row.total_order}</TableCell>
+                      <TableCell>
+                        <button
+                          onClick={() =>
+                            navigate("/customer/detailorder/" + row.id_order)
+                          }
+                        >
+                          Detail
+                        </button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+                {emptyRows > 0 && (
+                  <TableRow
+                    style={{
+                      height: 33 * emptyRows,
+                    }}
+                  >
+                    <TableCell colSpan={6} />
                   </TableRow>
-                );
-              })}
-              {emptyRows > 0 && (
-                <TableRow
-                  style={{
-                    height: 33 * emptyRows,
-                  }}
-                >
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={orderData.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={orderData.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </div>
       </Paper>
     </Box>
   );

@@ -1,13 +1,14 @@
+// ProductDetailPage.js
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import "../CustomerComponents/ProductDetail.css";
-import "../CustomerComponents/ImageCarousel.css";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import "../CustomerComponents/ProductDetailPage.css";
 
-function ProductDetail({ match }) {
+const ProductDetailPage = ({ match }) => {
   const [product, setProduct] = useState(null);
-  const [images, setImages] = useState(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const url = process.env.REACT_APP_API_URL;
   const { id_barang } = useParams();
 
@@ -17,11 +18,6 @@ function ProductDetail({ match }) {
       url: `${url}/barang/${id_barang}`,
     }).then((response) => {
       setProduct(response.data.data);
-      setImages([
-        `${response.data.data.gambar1_barang}`,
-        `${response.data.data.gambar2_barang}`,
-        `${response.data.data.gambar3_barang}`,
-      ]);
     });
   }, [id_barang]);
 
@@ -29,42 +25,56 @@ function ProductDetail({ match }) {
     return <div>Loading...</div>;
   }
 
-  const nextSlide = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === images.length - 1 ? 0 : prevIndex + 1
-    );
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
-    );
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
   };
 
   return (
-    <div className="product-detail-container">
-      <div className="product-info">
-        <div className="image-carousel">
-          <button onClick={prevSlide}>{"<"}</button>
-          <img src={images[currentIndex]} alt={`Slide ${currentIndex + 1}`} />
-          <button onClick={nextSlide}>{">"}</button>
-        </div>
-        <h2>{product.nama_barang}</h2>
-        <p>
-          <strong>Type:</strong> {product.jenis_barang}
-        </p>
-        <p>
-          <strong>Price:</strong> ${product.harga_barang}
-        </p>
-        <p>
-          <strong>Description:</strong> {product.detail_barang}
-        </p>
-        <p>
-          <strong>Sold:</strong> {product.qty_terjual}
-        </p>
-      </div>
+    <div className="product-detail">
+      {product && (
+        <>
+          <Slider {...sliderSettings}>
+            <div>
+              <img src={product.gambar1_barang} alt="Product Image 1" />
+            </div>
+            <div>
+              <img src={product.gambar2_barang} alt="Product Image 2" />
+            </div>
+            <div>
+              <img src={product.gambar3_barang} alt="Product Image 3" />
+            </div>
+          </Slider>
+          <div> . </div>
+          <div style={{ position: "relative" }}>
+            <div style={{ position: "relative" }}>
+              <p style={{ position: "absolute", left: "5px" }}>
+                <b>{product.nama_barang}</b>
+              </p>
+              <p style={{ position: "absolute", right: "5px" }}>
+                Terjual: {product.qty_terjual}
+              </p>
+            </div>
+            <div
+              style={{
+                position: "relative",
+                top: "30px",
+                left: "5px",
+                right: "5px",
+              }}
+            >
+              <p>Rp{product.harga_barang}</p>
+              <p>Jenis: {product.jenis_barang}</p>
+              <p>Deskripsi: {product.detail_barang}</p>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
-}
+};
 
-export default ProductDetail;
+export default ProductDetailPage;

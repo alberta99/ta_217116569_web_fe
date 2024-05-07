@@ -258,12 +258,6 @@ export default function EnhancedTable() {
 
   return (
     <Box sx={{ width: "100%" }}>
-      <button
-        style={{ margin: 10 }}
-        onClick={() => navigate("/admin/inputproduk")}
-      >
-        Tambah Produk
-      </button>
       <Paper sx={{ width: "100%", mb: 2 }}>
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>

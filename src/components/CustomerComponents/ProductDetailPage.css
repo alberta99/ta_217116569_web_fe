@@ -1,0 +1,43 @@
+/* ProductDetailPage.css */
+
+.product-detail {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: azure;
+}
+
+
+.product-detail img {
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+}
+
+.slick-dots {
+    text-align: center !important;
+    margin-top: 20px;
+}
+
+.slick-dots li {
+    display: inline-block;
+    margin: 0 5px;
+}
+
+.slick-dots li button {
+    font-size: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    outline: none;
+}
+
+.slick-dots li button:before {
+    content: "•";
+    font-size: 14px;
+    color: #999;
+}
+
+.slick-dots li.slick-active button:before {
+    color: #333;
+}

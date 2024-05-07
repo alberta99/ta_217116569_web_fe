@@ -44,7 +44,12 @@ const LeadMasuk = () => {
     ],
     []
   );
-  return <TableContainer columns={columns} data={rowData} />;
+  return (
+    <div>
+      <h2>Laporan Lead Masuk</h2>
+      <TableContainer columns={columns} data={rowData} />
+    </div>
+  );
 };
 
 export default LeadMasuk;

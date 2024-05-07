@@ -45,8 +45,8 @@ const LeadMasuk = () => {
         accessor: "nama_sales",
       },
       {
-        Header: "Nama Perusahaan",
-        accessor: "nama_perusahaan",
+        Header: "Nama Toko",
+        accessor: "nama_toko",
       },
       {
         Header: "Jumlah Barang",
@@ -72,7 +72,12 @@ const LeadMasuk = () => {
     ],
     []
   );
-  return <TableContainer columns={columns} data={rowData} />;
+  return (
+    <div>
+      <h2>Laporan Penjualan</h2>
+      <TableContainer columns={columns} data={rowData} />
+    </div>
+  );
 };
 
 export default LeadMasuk;

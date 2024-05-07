@@ -67,6 +67,15 @@ export default function FormPropsTextFields() {
     }
   };
 
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+    if (e.target.validity.valid) {
+      setPasswordError(false);
+    } else {
+      setPasswordError(true);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (e.target.checkValidity()) {
@@ -78,7 +87,7 @@ export default function FormPropsTextFields() {
           alamat_sales: alamat,
           nohp_sales: nohp,
           email_sales: email,
-          password_sales: "default",
+          password_sales: password,
         },
       });
       if (status === 200) {
@@ -104,6 +113,7 @@ export default function FormPropsTextFields() {
       noValidate
       autoComplete="off"
     >
+      <h2>Registrasi Sales</h2>
       <div>
         <TextField
           required
@@ -146,6 +156,7 @@ export default function FormPropsTextFields() {
           id="outlined-required"
           label="Email"
           name="email"
+          value={email}
           onChange={handleEmailChange}
           error={emailError}
           helperText={emailError ? "Harap masukkan email yang valid!" : ""}
@@ -160,6 +171,7 @@ export default function FormPropsTextFields() {
           id="outlined-required"
           label="Password"
           name="password"
+          value={password}
           onChange={handlePasswordChange}
           error={passwordError}
           helperText={

@@ -66,70 +66,53 @@ function InsertProduk() {
     }
   }, [product_id]);
 
-  const insertData = async (formdata) => {
-    try {
-      await axios.post(`${url}/barang`, formdata, {
-        headers: {
-          "content-type": "multipart/form-data",
-        },
-      });
-    } catch (error) {
-      alert(error.message);
-    }
-  };
-
   const handleSubmit = useCallback(async () => {
-    const formdata = new FormData();
-    formdata.append("nama_barang", namaproduk);
-    formdata.append("jenis_barang", jenisproduk);
-    formdata.append("detail_barang", detailproduk);
-    formdata.append("harga_barang", hargaproduk);
-    gambar1be !== null &&
-      formdata.append("gambar_1", gambar1be, gambar1be.name);
-    gambar2be !== null &&
-      formdata.append("gambar_2", gambar2be, gambar2be.name);
-    gambar3be !== null &&
-      formdata.append("gambar_3", gambar3be, gambar3be.name);
-    const { status, data } = product_id
-      ? await axios.put(`${url}/barang/${product_id}`, formdata, {
-          headers: {
-            "content-type": "multipart/form-data",
-            Accept: "application/json",
-          },
-        })
-      : await axios.post(`${url}/barang`, formdata, {
-          headers: {
-            "content-type": "multipart/form-data",
-          },
-        });
+    try {
+      const formdata = new FormData();
+      formdata.append("nama_barang", namaproduk);
+      formdata.append("jenis_barang", jenisproduk);
+      formdata.append("detail_barang", detailproduk);
+      formdata.append("harga_barang", hargaproduk);
 
-    // const {status,data} = await axios({
-    //   method: 'post',
-    //   url: `http://localhost:3000/barang`,
-    //   data: {
-    //     nama_barang: namaproduk,
-    //     jenis_barang: jenisproduk,
-    //     detail_barang:detailproduk,
-    //     harga_barang:hargaproduk,
-    //     gambar1_barang:gambar1,
-    //     gambar2_barang:gambar2,
-    //     gambar3_barang:gambar3
-    //   }
-    // });
-    if (status === 200) {
-      alert(data.message);
-      if (!product_id) {
-        setNamaproduk("");
-        setJenisproduk("");
-        setHargaproduk("");
-        setDetailproduk("");
-        setGambar1("");
-        setGambar2("");
-        setGambar3("");
-        setGambar1be(null);
-        setGambar2be(null);
-        setGambar3be(null);
+      if (gambar1be !== null) {
+        formdata.append("gambar_1", gambar1be, gambar1be.name);
       }
+      if (gambar2be !== null) {
+        formdata.append("gambar_2", gambar2be, gambar2be.name);
+      }
+      if (gambar3be !== null) {
+        formdata.append("gambar_3", gambar3be, gambar3be.name);
+      }
+
+      const { status, data } = product_id
+        ? await axios.put(`${url}/barang/${product_id}`, formdata, {
+            headers: {
+              "content-type": "multipart/form-data",
+            },
+          })
+        : await axios.post(`${url}/barang`, formdata, {
+            headers: {
+              "content-type": "multipart/form-data",
+            },
+          });
+
+      if (status === 200) {
+        alert(data.message);
+        if (!product_id) {
+          setNamaproduk("");
+          setJenisproduk("");
+          setHargaproduk("");
+          setDetailproduk("");
+          setGambar1("");
+          setGambar2("");
+          setGambar3("");
+          setGambar1be(null);
+          setGambar2be(null);
+          setGambar3be(null);
+        }
+      }
+    } catch (error) {
+      alert(error.response?.data?.serverMessage || "An error occurred");
     }
   }, [
     namaproduk,
@@ -144,7 +127,7 @@ function InsertProduk() {
 
   return (
     <div>
-      <Typography variant="h4">Tambah Produk</Typography>
+      <Typography variant="h4">Tambah/Edit Produk</Typography>
       <Box>
         <TextField
           label="Gambar 1"

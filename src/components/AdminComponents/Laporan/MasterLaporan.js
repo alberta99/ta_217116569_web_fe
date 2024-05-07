@@ -8,6 +8,7 @@ export default function MasterLaporan() {
   };
   return (
     <div>
+      <h2>Master Laporan</h2>
       <button style={buttonStyle} onClick={() => navigate("/admin/leadmasuk")}>
         Laporan Lead Masuk
       </button>

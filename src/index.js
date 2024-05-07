@@ -25,6 +25,7 @@ import MasterLaporan from "./components/AdminComponents/Laporan/MasterLaporan";
 import DaftarOrderCust from "./components/CustomerComponents/daftarorder";
 import DaftarProdukCust from "./components/CustomerComponents/daftarproduk";
 import DetailProduk from "./components/CustomerComponents/detailproduk";
+import DetailOrder from "./components/CustomerComponents/detailorder";
 import { useAuth } from "./provider/authProvider";
 import { ProtectedRoute } from "./routes/ProtectedRoutes";
 import GantiPassword from "./components/CustomerComponents/gantipassword";
@@ -65,6 +66,7 @@ export default function App() {
         <Route path="customer">
           <Route path="daftarproduk" element={<DaftarProdukCust />} />
           <Route path="daftarorder" element={<DaftarOrderCust />} />
+          <Route path="detailorder/:order_id" element={<DetailOrder />} />
           <Route path="detailproduk/:id_barang" element={<DetailProduk />} />
           <Route path="gantipassword/:id_lead" element={<GantiPassword />} />
         </Route>
