@@ -46,10 +46,6 @@ function InsertProduk() {
     setGambar3be(file);
   };
 
-  const handleUpload = (event) => {
-    event.preventDefault();
-  };
-
   const getDataByID = useCallback(async (productId) => {
     const { data } = await axios.get(`${url}/barang/${productId}`);
     setNamaproduk(data.data.nama_barang);
@@ -125,6 +121,9 @@ function InsertProduk() {
     product_id,
   ]);
 
+  const handleUpload = (event) => {
+    event.preventDefault();
+  };
   return (
     <div>
       <Typography variant="h4">Tambah/Edit Produk</Typography>

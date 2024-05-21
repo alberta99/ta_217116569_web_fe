@@ -82,6 +82,7 @@ export function dateBetweenFilterFn(rows, id, filterValues) {
     return rows.filter((r) => {
       // format data
       var dateAndHour = r.values[id].split(" ");
+      console.log(dateAndHour);
       var [day, month, year] = [
         dateAndHour[1],
         monthToNumber(dateAndHour[2]),

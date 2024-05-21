@@ -26,8 +26,6 @@ import DaftarOrderCust from "./components/CustomerComponents/daftarorder";
 import DaftarProdukCust from "./components/CustomerComponents/daftarproduk";
 import DetailProduk from "./components/CustomerComponents/detailproduk";
 import DetailOrder from "./components/CustomerComponents/detailorder";
-import { useAuth } from "./provider/authProvider";
-import { ProtectedRoute } from "./routes/ProtectedRoutes";
 import GantiPassword from "./components/CustomerComponents/gantipassword";
 
 //import reportWebVitals from './reportWebVitals';

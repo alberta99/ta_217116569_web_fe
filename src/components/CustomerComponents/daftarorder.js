@@ -210,33 +210,6 @@ export default function EnhancedTable() {
     setOrderBy(property);
   };
 
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelected = orderData.map((n) => n.name);
-      setSelected(newSelected);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event, name) => {
-    // const selectedIndex = selected.indexOf(name);
-    // let newSelected = [];
-    // if (selectedIndex === -1) {
-    //   newSelected = newSelected.concat(selected, name);
-    // } else if (selectedIndex === 0) {
-    //   newSelected = newSelected.concat(selected.slice(1));
-    // } else if (selectedIndex === selected.length - 1) {
-    //   newSelected = newSelected.concat(selected.slice(0, -1));
-    // } else if (selectedIndex > 0) {
-    //   newSelected = newSelected.concat(
-    //     selected.slice(0, selectedIndex),
-    //     selected.slice(selectedIndex + 1),
-    //   );
-    // }
-    // setSelected(newSelected);
-  };
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -258,9 +231,6 @@ export default function EnhancedTable() {
       ),
     [orderData, order, orderBy, page, rowsPerPage]
   );
-  const onEditClick = useCallback((productId) => {
-    navigate("/admin/updateproduk/" + productId);
-  }, []);
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -273,7 +243,6 @@ export default function EnhancedTable() {
                 numSelected={selected.length}
                 order={order}
                 orderBy={orderBy}
-                onSelectAllClick={handleSelectAllClick}
                 onRequestSort={handleRequestSort}
                 rowCount={orderData.length}
               />

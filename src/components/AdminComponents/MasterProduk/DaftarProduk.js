@@ -206,60 +206,6 @@ export default function EnhancedTable() {
       });
   }, []);
 
-  const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
-  };
-
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelected = dataProduk.map((n) => n.name);
-      setSelected(newSelected);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event, name) => {
-    // const selectedIndex = selected.indexOf(name);
-    // let newSelected = [];
-    // if (selectedIndex === -1) {
-    //   newSelected = newSelected.concat(selected, name);
-    // } else if (selectedIndex === 0) {
-    //   newSelected = newSelected.concat(selected.slice(1));
-    // } else if (selectedIndex === selected.length - 1) {
-    //   newSelected = newSelected.concat(selected.slice(0, -1));
-    // } else if (selectedIndex > 0) {
-    //   newSelected = newSelected.concat(
-    //     selected.slice(0, selectedIndex),
-    //     selected.slice(selectedIndex + 1),
-    //   );
-    // }
-    // setSelected(newSelected);
-  };
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - dataProduk.length) : 0;
-
-  const visibleRows = React.useMemo(
-    () =>
-      stableSort(dataProduk, getComparator(order, orderBy)).slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage
-      ),
-    [dataProduk, order, orderBy, page, rowsPerPage]
-  );
   const onEditClick = useCallback((productId) => {
     navigate("/admin/updateproduk/" + productId);
   }, []);
@@ -275,6 +221,42 @@ export default function EnhancedTable() {
       });
     window.location.reload(false);
   });
+
+  const handleRequestSort = (event, property) => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - dataProduk.length) : 0;
+    
+  const visibleRows = React.useMemo(
+    () =>
+      stableSort(dataProduk, getComparator(order, orderBy)).slice(
+        page * rowsPerPage,
+        page * rowsPerPage + rowsPerPage
+      ),
+    [dataProduk, order, orderBy, page, rowsPerPage]
+  );
+
+  const handleSelectAllClick = (event) => {
+    if (event.target.checked) {
+      const newSelected = dataProduk.map((n) => n.name);
+      setSelected(newSelected);
+      return;
+    }
+    setSelected([]);
+  };
   return (
     <Box sx={{ width: "100%" }}>
       <button

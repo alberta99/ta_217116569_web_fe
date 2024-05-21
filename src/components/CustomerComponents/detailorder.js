@@ -13,33 +13,25 @@ function InvoicePage() {
   const { order_id } = useParams();
 
   useEffect(() => {
-    axios({
-      method: "get",
-      url: `${url}/order/detailorder/${order_id}`,
-    })
-      .then((response) => {
-        setInvoiceDataTable(response.data.data);
-      })
-      .catch((err) => {
+    const fetchInvoiceData = async () => {
+      try {
+        const detailResponse = await axios.get(`${url}/order/detailorder/${order_id}`);
+        const sumResponse = await axios.get(`${url}/order/ordersumbyid/${order_id}`);
+        
+        setInvoiceDataTable(detailResponse.data.data);
+        setInvoiceData(sumResponse.data.data);
+      } catch (err) {
         console.log(err);
-      });
+      }
+    };
+  
+    fetchInvoiceData();
   }, [order_id]);
-  useEffect(() => {
-    axios({
-      method: "get",
-      url: `${url}/order/ordersumbyid/${order_id}`,
-    })
-      .then((response) => {
-        setInvoiceData(response.data.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, [order_id]);
-
-  if (!invoiceData) {
+  
+  if (!invoiceData || !invoiceDataTable) {
     return <div>Loading...</div>;
   }
+  
 
   return (
     <div className="invoice-container">

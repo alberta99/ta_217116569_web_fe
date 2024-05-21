@@ -202,11 +202,11 @@ export default function EnhancedTable() {
         console.error("Error fetching data:", error);
       });
   }, []);
-  //edit click
+
   const onEditClick = useCallback((leadId) => {
     navigate("/admin/editlead/" + leadId);
   }, []);
-  //delete click
+  
   const onDeleteClick = useCallback((leadId) => {
     axios
       .put(`${url}/lead/del/${leadId}`)
@@ -225,15 +225,6 @@ export default function EnhancedTable() {
     setOrderBy(property);
   };
 
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelected = dataLead.map((n) => n.name);
-      setSelected(newSelected);
-      return;
-    }
-    setSelected([]);
-  };
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -242,8 +233,6 @@ export default function EnhancedTable() {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
-  // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - dataLead.length) : 0;
 
@@ -256,6 +245,14 @@ export default function EnhancedTable() {
     [dataLead, order, orderBy, page, rowsPerPage]
   );
 
+  const handleSelectAllClick = (event) => {
+    if (event.target.checked) {
+      const newSelected = dataLead.map((n) => n.name);
+      setSelected(newSelected);
+      return;
+    }
+    setSelected([]);
+  };
   return (
     <Box sx={{ width: "100%" }}>
       <Paper sx={{ width: "100%", mb: 2 }}>
